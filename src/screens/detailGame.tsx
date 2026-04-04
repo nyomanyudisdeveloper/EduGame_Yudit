@@ -1,11 +1,10 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGameDetail } from "../features/game/useGameDetail";
 import { useListGameModules } from "../features/game/useListGamesModule";
 
 
 const DetailGameScreen = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
     const { gameDetail, loading, error } = useGameDetail(id || "");    
     const { listGameModules, loading: listLoading, error: listError } = useListGameModules(id || "");
     

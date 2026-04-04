@@ -1,6 +1,6 @@
 import  { useState, useEffect, useRef } from 'react';
 import { PREDEFINED_LEVELS_1, PREDEFINED_LEVELS_2 } from '../../data/predefined_level';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 interface Level {
   board: boolean[][];
@@ -122,7 +122,6 @@ export default function BeeBotScreen() {
     // setShuffledLevels(shuffled);
     // generateLevel(1, shuffled);
 
-    console.log("Module level from URL:", module_level);
     const PREDEFINED_LEVELS = module_level === '1' ? PREDEFINED_LEVELS_1 : PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
     const savedShuffledLevelStr = localStorage.getItem('shuffledLevel');
     const savedLevelStr = localStorage.getItem('currentLevel');
