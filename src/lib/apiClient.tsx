@@ -3,6 +3,7 @@ import { useAuthStore } from "../features/auth/authStore";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";  
 
+axios.defaults.withCredentials = true;
 
 const api =  axios.create({
     baseURL: API_BASE_URL,
