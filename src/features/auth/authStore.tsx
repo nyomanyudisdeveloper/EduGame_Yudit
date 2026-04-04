@@ -1,0 +1,19 @@
+import { create } from "zustand"
+
+type AuthState = {
+  user: any
+  isAuthenticated: boolean
+  isLoading: boolean
+  setUser: (user: any) => void
+  setLoading: (loading: boolean) => void
+  logout: () => void
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  setUser: (user) => {  set({ user, isAuthenticated: true, isLoading: false }) },
+  setLoading: (loading) => set({ isLoading: loading }),
+  logout: () => set({ user: null, isAuthenticated: false, isLoading: false })
+}))
