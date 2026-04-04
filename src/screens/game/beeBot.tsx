@@ -1,13 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { PREDEFINED_LEVELS_1, PREDEFINED_LEVELS_2 } from '../../data/predefined_level';
+import  { useState, useEffect, useRef } from 'react';
+import { PREDEFINED_LEVELS_1 } from '../../data/predefined_level';
+
+interface Level {
+  board: boolean[][];
+  bee: { x: number; y: number; dir: number };
+  flower: { x: number; y: number };
+}
 
 const BOARD_SIZE = 10;
 const MAX_COMMANDS = 50;
 
 // Helper untuk penundaan animasi
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const saveToLocalStorage = (shuffledLevel, level, instruction, startTime) => {
+const saveToLocalStorage = (shuffledLevel: Level[], level: number, instruction: string[], startTime: number) => {
   try { localStorage.setItem('shuffledLevel', JSON.stringify(shuffledLevel)); 
     localStorage.setItem('currentLevel', level.toString()); 
     localStorage.setItem('currentInstruction', JSON.stringify(instruction));
@@ -17,7 +23,7 @@ const saveToLocalStorage = (shuffledLevel, level, instruction, startTime) => {
 }
 
 // Fungsi untuk mengacak array
-function shuffleArray(array) {
+function shuffleArray<T>(array: T[]) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -25,7 +31,7 @@ function shuffleArray(array) {
 }
 
 // Ikon Perintah (JSX)
-const CommandIcon = ({ cmd }) => {
+const CommandIcon = ({ cmd }: { cmd: string }) => {
   if (cmd === 'FORWARD') return <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>;
   if (cmd === 'BACKWARD') return <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>;
   if (cmd === 'LEFT') return <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
@@ -64,13 +70,13 @@ const BeeSVG = () => (
 );
 
 export default function BeeBotScreen() {
-  const [shuffledLevels, setShuffledLevels] = useState([]);
+  const [shuffledLevels, setShuffledLevels] = useState<Level[]>([]);
   const [level, setLevel] = useState(1);
-  const [board, setBoard] = useState([]);
+  const [board, setBoard] = useState<boolean[][]>([]);
   const [initialBee, setInitialBee] = useState({ x: 0, y: 0, dir: 0 });
   const [bee, setBee] = useState({ x: 0, y: 0, dir: 0 });
   const [flower, setFlower] = useState({ x: 0, y: 0 });
-  const [commands, setCommands] = useState([]);
+  const [commands, setCommands] = useState<string[]>([]);
   
   const [isExecuting, setIsExecuting] = useState(false);
   const [status, setStatus] = useState('idle'); // 'idle', 'running', 'success', 'fail'
@@ -78,8 +84,29 @@ export default function BeeBotScreen() {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [errorIndex, setErrorIndex] = useState(-1);
   
-  const startTimeRef = useRef(null);
-  const commandRefs = useRef([]);
+  const startTimeRef = useRef<number | null>(null);
+  const commandRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+   const generateLevel = (currentLevel: number, levels: Level[] = shuffledLevels, isReset: boolean = true) => {
+    if (levels.length === 0) return;
+    const levelIndex = (currentLevel - 1) % levels.length;
+    const levelData = levels[levelIndex];
+
+    setLevel(currentLevel);
+    setBoard(levelData.board);
+    setInitialBee({ ...levelData.bee });
+    setBee({ ...levelData.bee });
+    setFlower({ ...levelData.flower });
+
+    if(isReset)
+      setCommands([]);
+    
+    setIsExecuting(false);
+    setStatus('idle');
+    setActiveIndex(-1);
+    setErrorIndex(-1);
+    setMessage({ text: `Level ${currentLevel}! Guide the bee through the dirt path.`, type: 'idle' });
+  };
 
   // Inisialisasi Game
   useEffect(() => {
@@ -93,11 +120,14 @@ export default function BeeBotScreen() {
 
 
     const PREDEFINED_LEVELS = PREDEFINED_LEVELS_1; // Bisa ditambah dengan level lain di masa depan
-    const savedShuffledLevel = JSON.parse(localStorage.getItem('shuffledLevel'));
-    const savedLevel = parseInt(localStorage.getItem('currentLevel'));
-    const savedInstruction = JSON.parse(localStorage.getItem('currentInstruction'));
+    const savedShuffledLevelStr = localStorage.getItem('shuffledLevel');
+    const savedLevelStr = localStorage.getItem('currentLevel');
+    const savedInstructionStr = localStorage.getItem('currentInstruction');
 
-    if(savedShuffledLevel && savedLevel && savedInstruction) {
+    if(savedShuffledLevelStr && savedLevelStr && savedInstructionStr) {
+      const savedShuffledLevel = JSON.parse(savedShuffledLevelStr);
+      const savedLevel = parseInt(savedLevelStr);
+      const savedInstruction = JSON.parse(savedInstructionStr);
       setShuffledLevels(savedShuffledLevel);
       generateLevel(savedLevel, savedShuffledLevel,false);
       setCommands(savedInstruction);
@@ -120,43 +150,25 @@ export default function BeeBotScreen() {
     }
   }, [activeIndex]);
 
-  const generateLevel = (currentLevel, levels = shuffledLevels, isReset = true) => {
-    if (levels.length === 0) return;
-    const levelIndex = (currentLevel - 1) % levels.length;
-    const levelData = levels[levelIndex];
-
-    setLevel(currentLevel);
-    setBoard(levelData.board);
-    setInitialBee({ ...levelData.bee });
-    setBee({ ...levelData.bee });
-    setFlower({ ...levelData.flower });
-
-    if(isReset)
-      setCommands([]);
-    
-    setIsExecuting(false);
-    setStatus('idle');
-    setActiveIndex(-1);
-    setErrorIndex(-1);
-    setMessage({ text: `Level ${currentLevel}! Guide the bee through the dirt path.`, type: 'idle' });
-  };
+ 
 
   const nextLevel = () => {
     generateLevel(level + 1);
   };
 
-  const addCommand = (cmd) => {
+  const addCommand = (cmd: string) => {
     if (isExecuting || commands.length >= MAX_COMMANDS) return;
     setCommands(prev => [...prev, cmd]);
     setMessage({ text: "Keep adding directions, then press GO!", type: 'idle' });
-    saveToLocalStorage(shuffledLevels, level, commands, startTimeRef.current);
+    saveToLocalStorage(shuffledLevels, level, [...commands, cmd], startTimeRef.current || 0);
   };
 
-  const removeCommand = (index) => {
+  const removeCommand = (index: number) => {
     if (isExecuting) return;
-    setCommands(prev => prev.filter((_, i) => i !== index));
+    const newCommands = commands.filter((_, i) => i !== index);
+    setCommands(newCommands);
     setMessage({ text: "Instruction removed.", type: 'idle' });
-    saveToLocalStorage(shuffledLevels, level, commands, startTimeRef.current);
+    saveToLocalStorage(shuffledLevels, level, newCommands, startTimeRef.current || 0);
   };
 
   const clearCommands = () => {
@@ -166,12 +178,12 @@ export default function BeeBotScreen() {
     setStatus('idle');
     setActiveIndex(-1);
     setErrorIndex(-1);
-    saveToLocalStorage(shuffledLevels, level, [], startTimeRef.current);
+    saveToLocalStorage(shuffledLevels, level, [], startTimeRef.current || 0);
     setMessage({ text: "Instructions cleared. Let's make a new path!", type: 'idle' });
   };
 
   const executeCommands = async () => {
-    saveToLocalStorage(shuffledLevels, level, commands);
+    saveToLocalStorage(shuffledLevels, level, commands, startTimeRef.current || 0);
     if (commands.length === 0) {
       setMessage({ text: "Please enter commands first!", type: 'fail' });
       return;
@@ -233,7 +245,7 @@ export default function BeeBotScreen() {
 
     if (currentBee.x === flower.x && currentBee.y === flower.y) {
       if (level >= shuffledLevels.length) {
-        const totalSeconds = Math.floor((Date.now() - startTimeRef.current) / 1000);
+        const totalSeconds = Math.floor((Date.now() - (startTimeRef.current || 0)) / 1000);
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
         let timeString = minutes > 0 ? `${minutes} minutes ${seconds} seconds` : `${seconds} seconds`;
@@ -342,7 +354,7 @@ export default function BeeBotScreen() {
                   return (
                     <div 
                       key={index} 
-                      ref={el => commandRefs.current[index] = el}
+                      ref={(el) => { commandRefs.current[index] = el; }}
                       onClick={() => removeCommand(index)} 
                       title="Click to remove" 
                       className={`cursor-pointer hover:scale-110 hover:ring-2 hover:ring-red-400 ${color} text-white p-1 rounded-md shadow-sm flex items-center justify-center transition-all duration-300 ${highlightClass}`}

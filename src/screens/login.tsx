@@ -5,15 +5,15 @@ import { useNavigate } from "react-router-dom";
 
 
 const LoginScreen = () => {
-    const {login, loading, error} = useAuth()
+    const {login} = useAuth()
     const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // Handle login logic here
-        const username = (e.target as HTMLFormElement).elements[0].value;
-        const password = (e.target as HTMLFormElement).elements[1].value;
+const username = ((e.target as HTMLFormElement).elements[0] as HTMLInputElement).value;
+        const password = ((e.target as HTMLFormElement).elements[1] as HTMLInputElement).value;
 
         const success = await login(username, password)
         if (success) {
@@ -38,9 +38,9 @@ const LoginScreen = () => {
                         className="border border-gray-300 rounded px-3 py-2  w-full"
                     />
                     {showPassword ? (
-                        <FaEye onClick={() => setShowPassword((data) => !showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" />
+                        <FaEye onClick={() => setShowPassword(prev => !prev)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" />
                     ) : (
-                        <FaEye onClick={() => setShowPassword((data) => !showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" />
+                        <FaEye onClick={() => setShowPassword(prev => !prev)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" />
                     )}
                 </div>
                 

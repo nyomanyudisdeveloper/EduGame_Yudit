@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 
 
 export default function ProtectedRoute({ children }: { children: JSX.Element }) {
-    const {isAuthenticated, user, isLoading} = useAuthStore();
+    const {isAuthenticated, isLoading} = useAuthStore();
    
     if (isLoading) {
         return <div>Loading...</div>; // Or a proper loading component

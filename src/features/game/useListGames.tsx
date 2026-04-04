@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { getListGames } from "./gameApi";
 
+interface Game {
+    id: string;
+    name: string;
+    description: string;
+    thumbnail_link: string;
+}
+
 export const useListGames = () => {
-    const [listGames, setListGames] = useState([]);
+    const [listGames, setListGames] = useState<Game[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 

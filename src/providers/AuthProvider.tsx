@@ -1,11 +1,11 @@
 // providers/AuthProvider.tsx
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import { useLocation } from "react-router-dom"
 
 import api, { setAccessToken } from "../lib/apiClient"
 import { useAuthStore } from "../features/auth/authStore"
 
-export default function AuthProvider({ children }) {
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const setUser = useAuthStore((state) => state.setUser)
   const setLoading = useAuthStore((state) => state.setLoading)
   const location = useLocation()

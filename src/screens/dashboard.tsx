@@ -1,11 +1,10 @@
-import Header from "../components/header";
 import { IoSearchSharp } from "react-icons/io5";
 import { useListGames } from "../features/game/useListGames";
 import { useNavigate } from "react-router-dom";
 
 
 const DashboardScreen = () => {
-    const { listGames, isLoading, error } = useListGames();
+    const { listGames, loading, error } = useListGames();
     const navigate = useNavigate();
    
 
@@ -24,7 +23,7 @@ const DashboardScreen = () => {
                 <input type="text" placeholder="Search Game..." className="border border-gray-300 rounded px-7 py-2 w-full " />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {isLoading && <p>Loading games...</p>}
+                {loading && <p>Loading games...</p>}
                 {error && <p>Error loading games: {error}</p>}
                 {listGames && listGames.map(game => (
                     <div onClick={() => goToGameDetail(game.id)} key={game.id} className="border rounded p-3 cursor-pointer hover:shadow-lg hover:scale-105 transition-transform">

@@ -1,17 +1,18 @@
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGameDetail } from "../features/game/useGameDetail";
 
 
 const DetailGameScreen = () => {
-    const {id  } = useParams();
-    const {gameDetail, loading, error} = useGameDetail(id);
-    const {listGames, isLoading, error: listGamesError} = useGameDetail(id);    
+    const { id } = useParams();
+    const { gameDetail, loading, error } = useGameDetail(id || "");    
+    
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error}</p>;
     
     return (
         <> 
             <div className="py-20 px-5 flex flex-row justify-between">
-                {/* <p>{thumbnail_link}</p>
-                <img src={thumbnail_link} alt={name} className="w-1/3 h-auto object-cover rounded" /> */}
+                {gameDetail && <p>Game Detail: {JSON.stringify(gameDetail)}</p>}
             </div>
         </>
     )

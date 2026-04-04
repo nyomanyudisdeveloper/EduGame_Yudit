@@ -1,5 +1,5 @@
 // Helper untuk parsing desain level
-const parseBoard = (layout) => layout.map(row => row.split('').map(cell => cell === '.'));
+const parseBoard = (layout: string[]) => layout.map((row: string) => row.split('').map((cell: string) => cell === '.'));
 
 export const PREDEFINED_LEVELS_1 = [
   { board: parseBoard(["##########", "##########", "##########", "##########", "#........#", "##########", "##########", "##########", "##########", "##########"]), bee: { x: 1, y: 4, dir: 90 }, flower: { x: 8, y: 4 } },
