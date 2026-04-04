@@ -1,10 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGameDetail } from "../features/game/useGameDetail";
 import { useListGameModules } from "../features/game/useListGamesModule";
 
 
 const DetailGameScreen = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { gameDetail, loading, error } = useGameDetail(id || "");    
     const { listGameModules, loading: listLoading, error: listError } = useListGameModules(id || "");
     
@@ -32,7 +33,12 @@ const DetailGameScreen = () => {
                         <h2 className="font-semibold">{game.name}</h2>
                         <p className="text-sm text-gray-600">{game.description}</p>
                         <div className="flex gap-2 mt-2">
-                            <button className="cursor-pointer mt-2 bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600">Try a game</button>
+                            <button 
+                                className="cursor-pointer mt-2 bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600"
+                                onClick={() => window.open(`${window.location.origin}${game.path_trial_game}`, "_blank")}
+                            >
+                                Try a game 
+                            </button>
                             <button className="cursor-pointer mt-2 bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600">Assign</button>
                         </div>
                     </div>

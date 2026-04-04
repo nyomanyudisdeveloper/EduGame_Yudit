@@ -1,5 +1,6 @@
 import  { useState, useEffect, useRef } from 'react';
-import { PREDEFINED_LEVELS_1 } from '../../data/predefined_level';
+import { PREDEFINED_LEVELS_1, PREDEFINED_LEVELS_2 } from '../../data/predefined_level';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 interface Level {
   board: boolean[][];
@@ -87,6 +88,9 @@ export default function BeeBotScreen() {
   const startTimeRef = useRef<number | null>(null);
   const commandRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const [searchParams] = useSearchParams();
+  const module_level  = searchParams.get('module_level') || '1';
+
    const generateLevel = (currentLevel: number, levels: Level[] = shuffledLevels, isReset: boolean = true) => {
     if (levels.length === 0) return;
     const levelIndex = (currentLevel - 1) % levels.length;
@@ -118,8 +122,8 @@ export default function BeeBotScreen() {
     // setShuffledLevels(shuffled);
     // generateLevel(1, shuffled);
 
-
-    const PREDEFINED_LEVELS = PREDEFINED_LEVELS_1; // Bisa ditambah dengan level lain di masa depan
+    console.log("Module level from URL:", module_level);
+    const PREDEFINED_LEVELS = module_level === '1' ? PREDEFINED_LEVELS_1 : PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
     const savedShuffledLevelStr = localStorage.getItem('shuffledLevel');
     const savedLevelStr = localStorage.getItem('currentLevel');
     const savedInstructionStr = localStorage.getItem('currentInstruction');
