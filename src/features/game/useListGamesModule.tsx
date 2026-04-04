@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { getGameDetail } from "./gameApi";
+import { getListGamesModule } from "./gameApi";
 
-interface GameDetail {
+interface ListGameModule {
     id: string;
     name: string;
     description: string;
+    level: number;
     thumbnail_link: string;
-    subject_name: string;
-    category_name: string;
 }
 
-export const useGameDetail = (gameId: string) => {
+export const useListGameModules = (gameId: string) => {
     
-    const [gameDetail, setGameDetail] = useState<GameDetail | null>(null);
+    const [listGameModules, setListGameModules] = useState<[ListGameModule] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -21,8 +20,8 @@ export const useGameDetail = (gameId: string) => {
             setLoading(true);
             setError(null);
             try {
-                const res = await getGameDetail(gameId);
-                setGameDetail(res);
+                const res = await getListGamesModule(gameId);
+                setListGameModules(res);
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -33,5 +32,5 @@ export const useGameDetail = (gameId: string) => {
         fetchGameDetail();
     }, [gameId])
 
-    return { gameDetail, loading, error }
+    return { listGameModules, loading, error }
 }
