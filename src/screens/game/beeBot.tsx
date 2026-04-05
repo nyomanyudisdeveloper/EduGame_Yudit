@@ -249,7 +249,7 @@ export default function BeeBotScreen() {
         throw new Error("startTime is required");
       }
       
-      await gameAPI.updateGameSessionDetail(gameSessionDetailID,level+1,0,startTimeRef.current || 0 )
+      await gameAPI.updateGameSessionDetail(gameSessionDetailID,level+1,0)
     } else {
       setMessage({ text: "Ah, the bee hasn't reached the flower yet. Try fixing the instructions! 🤔", type: 'fail' });
       setStatus('fail');

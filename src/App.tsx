@@ -9,6 +9,7 @@ import PrivateLayout from "./layout/privateLayout";
 import GameSession from "./screens/gameSession";
 import JoinGameScreen from "./screens/joinGame";
 import BeeBotTrialScreen from "./screens/game/beeBotTrial";
+import GameSessionDetailScreen from "./screens/gameSessionDetail";
 
 
 
@@ -30,6 +31,7 @@ const App = () => {// Use VITE_ prefix for Vite
           <Route path="/detailGame/:id" element={<ProtectedRoute><DetailGameScreen /></ProtectedRoute>} />
           <Route path="/" element={<ProtectedRoute><DashboardScreen /></ProtectedRoute>} />
           <Route path="/game-session" element={<ProtectedRoute><GameSession /></ProtectedRoute>} />
+          <Route path="/game-session/:id" element={<ProtectedRoute><GameSessionDetailScreen /></ProtectedRoute>} />
         </Route>
 
          

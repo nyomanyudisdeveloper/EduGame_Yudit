@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom"
 import { useListGameSession, type ListGameSessionInterface } from "../features/game/useListGamesSession"
 
 
 const GameSession = () => {
     const {listGameSession} = useListGameSession()
+    const navigate = useNavigate()
     
     const handleCopy = async (sessionId:string) => {
         try{
@@ -46,6 +48,9 @@ const GameSession = () => {
                             {game.total_participant}
                         </td>
                         <td className="p-3 text-sm font-medium text-gray-800">
+                            <button onClick={() => navigate(`/game-session/${game.game_session_id}`)  } className="border rounded px-3 py-2 cursor-pointer bg-blue-500 hover:bg-blue-200 mr-3">
+                                See Detail
+                            </button>
                             <button onClick={() => handleCopy(game.game_session_id)  } className="border rounded px-3 py-2 cursor-pointer bg-amber-500 hover:bg-amber-200">
                                 Copy Link
                             </button>
