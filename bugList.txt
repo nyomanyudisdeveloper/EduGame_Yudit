@@ -1,2 +1,7 @@
 - Pada saat login , tercipta 2 refresh token yang sama
 - Pelajari lagi proses authentication secara keseluruhan. 
+
+Detail Game Page
+- Tambahkan validasi date from tidak boleh ambil yang kemarin 
+- tambahkan validasi date from tidak boleh lebih besar dari date to
+

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getListGamesModule } from "./gameApi";
 
-interface ListGameModule {
+export interface ListGameModuleInterface {
     id: string;
     name: string;
     description: string;
@@ -12,7 +12,7 @@ interface ListGameModule {
 
 export const useListGameModules = (gameId: string) => {
     
-    const [listGameModules, setListGameModules] = useState<[ListGameModule] | null>(null);
+    const [listGameModules, setListGameModules] = useState<[ListGameModuleInterface] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 

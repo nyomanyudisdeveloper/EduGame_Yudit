@@ -12,7 +12,7 @@ const LoginScreen = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         // Handle login logic here
-const username = ((e.target as HTMLFormElement).elements[0] as HTMLInputElement).value;
+        const username = ((e.target as HTMLFormElement).elements[0] as HTMLInputElement).value;
         const password = ((e.target as HTMLFormElement).elements[1] as HTMLInputElement).value;
 
         const success = await login(username, password)
