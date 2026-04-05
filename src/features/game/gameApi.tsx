@@ -31,6 +31,20 @@ export const getGameSession = async(sessionId: string) => {
     return response.data
 } 
 
+export const getGameSessionDetail = async(sessionDetailId: string) => {
+    const response = await api.get<{student_name:string,level:number,score:number,duration:number}>(`/game/sessionDetail/${sessionDetailId}`)
+    return response.data
+} 
+
+export const updateGameSessionDetail = async(sessionDetailID:string,level:number,score:number,duration:number) => {
+    const response = await api.put(`/game/sessionDetail/${sessionDetailID}`, {
+        level,
+        score,
+        duration
+    })
+    return response.data
+}
+
 export const createGameSessionDetail = async (data: {game_session_id: string, student_name: string}) => {
     const response = await api.post(`/game/sessionDetail`, {
         game_session_id: data.game_session_id,

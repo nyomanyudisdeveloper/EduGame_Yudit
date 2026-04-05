@@ -1,6 +1,7 @@
 import  { useState, useEffect, useRef } from 'react';
 import { PREDEFINED_LEVELS_1, PREDEFINED_LEVELS_2 } from '../../data/predefined_level';
-import { useSearchParams } from 'react-router-dom';
+import {  useSearchParams } from 'react-router-dom';
+import * as gameAPI from '../../features/game/gameApi'
 
 interface Level {
   board: boolean[][];
@@ -14,14 +15,6 @@ const MAX_COMMANDS = 50;
 // Helper untuk penundaan animasi
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const saveToLocalStorage = (shuffledLevel: Level[], level: number, instruction: string[], startTime: number) => {
-  try { localStorage.setItem('shuffledLevel', JSON.stringify(shuffledLevel)); 
-    localStorage.setItem('currentLevel', level.toString()); 
-    localStorage.setItem('currentInstruction', JSON.stringify(instruction));
-    localStorage.setItem('currentStartTime', startTime.toString());
-  }
-  catch (e) { console.error("Failed to save to localStorage", e); }
-}
 
 // Fungsi untuk mengacak array
 function shuffleArray<T>(array: T[]) {
@@ -84,26 +77,29 @@ export default function BeeBotScreen() {
   const [message, setMessage] = useState({ text: 'Loading level...', type: 'idle' });
   const [activeIndex, setActiveIndex] = useState(-1);
   const [errorIndex, setErrorIndex] = useState(-1);
+  const [searchParams] = useSearchParams();
+  const keySessionDetailIDLocalStorage = `${searchParams.get('gameSessionID')}-detailID`
+  console.log("keySessionDetailIDLocalStorage = ",keySessionDetailIDLocalStorage)
+  const gameSessionDetailID = localStorage.getItem(keySessionDetailIDLocalStorage)
   
   const startTimeRef = useRef<number | null>(null);
   const commandRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const [searchParams] = useSearchParams();
+  
   const module_level  = searchParams.get('module_level') || '1';
 
-   const generateLevel = (currentLevel: number, levels: Level[] = shuffledLevels, isReset: boolean = true) => {
+   const generateLevel = (currentLevel: number, levels: Level[] = shuffledLevels) => {
     if (levels.length === 0) return;
     const levelIndex = (currentLevel - 1) % levels.length;
     const levelData = levels[levelIndex];
 
-    setLevel(currentLevel);
+    setLevel(Number(currentLevel));
     setBoard(levelData.board);
     setInitialBee({ ...levelData.bee });
     setBee({ ...levelData.bee });
     setFlower({ ...levelData.flower });
 
-    if(isReset)
-      setCommands([]);
+    setCommands([]);
     
     setIsExecuting(false);
     setStatus('idle');
@@ -114,35 +110,25 @@ export default function BeeBotScreen() {
 
   // Inisialisasi Game
   useEffect(() => {
-    
-    // const PREDEFINED_LEVELS = PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
-    // startTimeRef.current = Date.now();
-    // const shuffled = [...PREDEFINED_LEVELS];
-    // shuffleArray(shuffled);
-    // setShuffledLevels(shuffled);
-    // generateLevel(1, shuffled);
-
-    const PREDEFINED_LEVELS = module_level === '1' ? PREDEFINED_LEVELS_1 : PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
-    const savedShuffledLevelStr = localStorage.getItem('shuffledLevel');
-    const savedLevelStr = localStorage.getItem('currentLevel');
-    const savedInstructionStr = localStorage.getItem('currentInstruction');
-
-    if(savedShuffledLevelStr && savedLevelStr && savedInstructionStr) {
-      const savedShuffledLevel = JSON.parse(savedShuffledLevelStr);
-      const savedLevel = parseInt(savedLevelStr);
-      const savedInstruction = JSON.parse(savedInstructionStr);
-      setShuffledLevels(savedShuffledLevel);
-      generateLevel(savedLevel, savedShuffledLevel,false);
-      setCommands(savedInstruction);
-    }
-    else{
+    const init = async () => {
+      let level:number = 1
+      startTimeRef.current = Date.now();
+      const PREDEFINED_LEVELS = module_level === '1' ? PREDEFINED_LEVELS_1 : PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
+      console.log("gameSessionDetailID = ",gameSessionDetailID)
+      if(gameSessionDetailID){
+        const response  = await gameAPI.getGameSessionDetail(gameSessionDetailID)
+        level = Number(response.level)
+        startTimeRef.current = response.duration == 0 ? Date.now() : response.duration
+      }
       const shuffled = [...PREDEFINED_LEVELS];
       shuffleArray(shuffled);
       setShuffledLevels(shuffled);
-      generateLevel(1, shuffled);
-    }
+      generateLevel(level, shuffled);
 
-    startTimeRef.current = Date.now();
+      
+    }
+    init()
+    
    
   }, []);
 
@@ -163,7 +149,7 @@ export default function BeeBotScreen() {
     if (isExecuting || commands.length >= MAX_COMMANDS) return;
     setCommands(prev => [...prev, cmd]);
     setMessage({ text: "Keep adding directions, then press GO!", type: 'idle' });
-    saveToLocalStorage(shuffledLevels, level, [...commands, cmd], startTimeRef.current || 0);
+   
   };
 
   const removeCommand = (index: number) => {
@@ -171,7 +157,7 @@ export default function BeeBotScreen() {
     const newCommands = commands.filter((_, i) => i !== index);
     setCommands(newCommands);
     setMessage({ text: "Instruction removed.", type: 'idle' });
-    saveToLocalStorage(shuffledLevels, level, newCommands, startTimeRef.current || 0);
+    
   };
 
   const clearCommands = () => {
@@ -181,12 +167,12 @@ export default function BeeBotScreen() {
     setStatus('idle');
     setActiveIndex(-1);
     setErrorIndex(-1);
-    saveToLocalStorage(shuffledLevels, level, [], startTimeRef.current || 0);
+    
     setMessage({ text: "Instructions cleared. Let's make a new path!", type: 'idle' });
   };
 
   const executeCommands = async () => {
-    saveToLocalStorage(shuffledLevels, level, commands, startTimeRef.current || 0);
+    
     if (commands.length === 0) {
       setMessage({ text: "Please enter commands first!", type: 'fail' });
       return;
@@ -259,6 +245,11 @@ export default function BeeBotScreen() {
         setMessage({ text: "Hooray! The bee got the honey! 🎉🍯", type: 'success' });
         setStatus('success');
       }
+      if(!gameSessionDetailID){
+        throw new Error("startTime is required");
+      }
+      
+      await gameAPI.updateGameSessionDetail(gameSessionDetailID,level+1,0,startTimeRef.current || 0 )
     } else {
       setMessage({ text: "Ah, the bee hasn't reached the flower yet. Try fixing the instructions! 🤔", type: 'fail' });
       setStatus('fail');

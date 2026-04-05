@@ -25,7 +25,7 @@ const JoinGameScreen = () => {
         // setIsLoading(true)
         const res = await gameAPI.createGameSessionDetail({game_session_id:sessionId ? sessionId : '',student_name:nickname})
         localStorage.setItem(keySessionDetailIDLocalStorage,res.id)
-        navigate(`${gameSession?.path_assign_game}`)
+        navigate(`${gameSession?.path_assign_game}&gameSessionID=${sessionId}`)
         // setIsLoading(false)
         
         // Handle login logic here
@@ -44,7 +44,7 @@ const JoinGameScreen = () => {
         const init = async () => {
             const gameSessionDetailID = localStorage.getItem(keySessionDetailIDLocalStorage)
             if(gameSessionDetailID && gameSession?.path_assign_game){
-                navigate(`${gameSession?.path_assign_game}`)
+                navigate(`${gameSession?.path_assign_game}&gameSessionID=${sessionId}`)
             }
         }
 
