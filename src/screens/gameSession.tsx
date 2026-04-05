@@ -6,7 +6,7 @@ const GameSession = () => {
     
     const handleCopy = async (sessionId:string) => {
         try{
-            await navigator.clipboard.writeText(`${window.location.origin}/${sessionId}`)
+            await navigator.clipboard.writeText(`${window.location.origin}/join/${sessionId}`)
             alert('URL Copied')
         }
         catch(err) {

@@ -26,6 +26,19 @@ export const createGameSession = async (data: {gameId: string, sessionName: stri
     return response.data;
 }
 
+export const getGameSession = async(sessionId: string) => {
+    const response = await api.get(`/game/session/${sessionId}`)
+    return response.data
+} 
+
+export const createGameSessionDetail = async (data: {game_session_id: string, student_name: string}) => {
+    const response = await api.post(`/game/sessionDetail`, {
+        game_session_id: data.game_session_id,
+        student_name: data.student_name
+    });
+    return response.data;
+}
+
 export const getListGameSessions = async() => {
     const response = await api.get(`/game/session`);
     return response.data
