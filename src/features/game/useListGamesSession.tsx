@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getListGameSessions, getListGamesModule } from "./gameApi";
+import { getListGameSessions } from "./gameApi";
 
 export interface ListGameSessionInterface {
     game_session_id: string;
