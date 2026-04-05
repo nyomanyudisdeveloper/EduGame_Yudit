@@ -25,3 +25,8 @@ export const createGameSession = async (data: {gameId: string, sessionName: stri
     });
     return response.data;
 }
+
+export const getListGameSessions = async() => {
+    const response = await api.get(`/game/session`);
+    return response.data
+}

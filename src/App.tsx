@@ -6,6 +6,7 @@ import DetailGameScreen from "./screens/detailGame";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicLayout from "./layout/PublicLayout";
 import PrivateLayout from "./layout/privateLayout";
+import GameSession from "./screens/gameSession";
 
 
 
@@ -24,6 +25,7 @@ const App = () => {// Use VITE_ prefix for Vite
         <Route element={<PrivateLayout />}>
           <Route path="/detailGame/:id" element={<ProtectedRoute><DetailGameScreen /></ProtectedRoute>} />
           <Route path="/" element={<ProtectedRoute><DashboardScreen /></ProtectedRoute>} />
+          <Route path="/game-session" element={<ProtectedRoute><GameSession /></ProtectedRoute>} />
         </Route>
 
          
