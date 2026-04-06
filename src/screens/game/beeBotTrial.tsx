@@ -14,14 +14,6 @@ const MAX_COMMANDS = 50;
 // Helper untuk penundaan animasi
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const saveToLocalStorage = (shuffledLevel: Level[], level: number, instruction: string[], startTime: number) => {
-  try { localStorage.setItem('shuffledLevel', JSON.stringify(shuffledLevel)); 
-    localStorage.setItem('currentLevel', level.toString()); 
-    localStorage.setItem('currentInstruction', JSON.stringify(instruction));
-    localStorage.setItem('currentStartTime', startTime.toString());
-  }
-  catch (e) { console.error("Failed to save to localStorage", e); }
-}
 
 // Fungsi untuk mengacak array
 function shuffleArray<T>(array: T[]) {
@@ -114,33 +106,12 @@ export default function BeeBotTrialScreen() {
 
   // Inisialisasi Game
   useEffect(() => {
-    
-    // const PREDEFINED_LEVELS = PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
-    // startTimeRef.current = Date.now();
-    // const shuffled = [...PREDEFINED_LEVELS];
-    // shuffleArray(shuffled);
-    // setShuffledLevels(shuffled);
-    // generateLevel(1, shuffled);
-
     const PREDEFINED_LEVELS = module_level === '1' ? PREDEFINED_LEVELS_1 : PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
-    const savedShuffledLevelStr = localStorage.getItem('shuffledLevel');
-    const savedLevelStr = localStorage.getItem('currentLevel');
-    const savedInstructionStr = localStorage.getItem('currentInstruction');
-
-    if(savedShuffledLevelStr && savedLevelStr && savedInstructionStr) {
-      const savedShuffledLevel = JSON.parse(savedShuffledLevelStr);
-      const savedLevel = parseInt(savedLevelStr);
-      const savedInstruction = JSON.parse(savedInstructionStr);
-      setShuffledLevels(savedShuffledLevel);
-      generateLevel(savedLevel, savedShuffledLevel,false);
-      setCommands(savedInstruction);
-    }
-    else{
-      const shuffled = [...PREDEFINED_LEVELS];
-      shuffleArray(shuffled);
-      setShuffledLevels(shuffled);
-      generateLevel(1, shuffled);
-    }
+  
+    const shuffled = [...PREDEFINED_LEVELS];
+    shuffleArray(shuffled);
+    setShuffledLevels(shuffled);
+    generateLevel(1, shuffled);
 
     startTimeRef.current = Date.now();
    
@@ -163,7 +134,6 @@ export default function BeeBotTrialScreen() {
     if (isExecuting || commands.length >= MAX_COMMANDS) return;
     setCommands(prev => [...prev, cmd]);
     setMessage({ text: "Keep adding directions, then press GO!", type: 'idle' });
-    saveToLocalStorage(shuffledLevels, level, [...commands, cmd], startTimeRef.current || 0);
   };
 
   const removeCommand = (index: number) => {
@@ -171,7 +141,6 @@ export default function BeeBotTrialScreen() {
     const newCommands = commands.filter((_, i) => i !== index);
     setCommands(newCommands);
     setMessage({ text: "Instruction removed.", type: 'idle' });
-    saveToLocalStorage(shuffledLevels, level, newCommands, startTimeRef.current || 0);
   };
 
   const clearCommands = () => {
@@ -181,12 +150,10 @@ export default function BeeBotTrialScreen() {
     setStatus('idle');
     setActiveIndex(-1);
     setErrorIndex(-1);
-    saveToLocalStorage(shuffledLevels, level, [], startTimeRef.current || 0);
     setMessage({ text: "Instructions cleared. Let's make a new path!", type: 'idle' });
   };
 
   const executeCommands = async () => {
-    saveToLocalStorage(shuffledLevels, level, commands, startTimeRef.current || 0);
     if (commands.length === 0) {
       setMessage({ text: "Please enter commands first!", type: 'fail' });
       return;
