@@ -71,6 +71,7 @@ export default function BeeBotScreen() {
   const [bee, setBee] = useState({ x: 0, y: 0, dir: 0 });
   const [flower, setFlower] = useState({ x: 0, y: 0 });
   const [commands, setCommands] = useState<string[]>([]);
+  const [studentName, setStudentName] = useState("")
   
   const [isExecuting, setIsExecuting] = useState(false);
   const [status, setStatus] = useState('idle'); // 'idle', 'running', 'success', 'fail'
@@ -79,7 +80,7 @@ export default function BeeBotScreen() {
   const [errorIndex, setErrorIndex] = useState(-1);
   const [searchParams] = useSearchParams();
   const keySessionDetailIDLocalStorage = `${searchParams.get('gameSessionID')}-detailID`
-  console.log("keySessionDetailIDLocalStorage = ",keySessionDetailIDLocalStorage)
+  
   const gameSessionDetailID = localStorage.getItem(keySessionDetailIDLocalStorage)
   
   const startTimeRef = useRef<number | null>(null);
@@ -114,9 +115,10 @@ export default function BeeBotScreen() {
       let level:number = 1
       startTimeRef.current = Date.now();
       const PREDEFINED_LEVELS = module_level === '1' ? PREDEFINED_LEVELS_1 : PREDEFINED_LEVELS_2; // Bisa ditambah dengan level lain di masa depan
-      console.log("gameSessionDetailID = ",gameSessionDetailID)
+      
       if(gameSessionDetailID){
         const response  = await gameAPI.getGameSessionDetail(gameSessionDetailID)
+        setStudentName(response.student_name)
         level = Number(response.level)
         startTimeRef.current = response.duration == 0 ? Date.now() : response.duration
       }
@@ -317,6 +319,9 @@ export default function BeeBotScreen() {
           
           {/* Antrean Perintah */}
           <div className="mb-2 sm:mb-3">
+            <h3 className="font-bold text-gray-600 mb-2 flex items-center justify-between text-sm sm:text-base">
+              <span>Name :{studentName}</span>
+            </h3>
             <h3 className="font-bold text-gray-600 mb-2 flex items-center justify-between text-sm sm:text-base">
               <span>Instructions:</span>
               <span className={`text-xs sm:text-sm px-2 py-1 rounded-md font-bold ${commands.length === MAX_COMMANDS ? 'bg-red-200 text-red-700' : 'bg-gray-200 text-gray-800'}`}>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as gameAPI from '../features/game/gameApi'
 import { useGameSession } from "../features/game/useGameSession";
@@ -10,9 +10,9 @@ const JoinGameScreen = () => {
     const navigate = useNavigate()
     const {sessionId} = useParams<{sessionId:string}>()
     const {gameSession}  = useGameSession(sessionId ? sessionId : '')
-    console.log('gameSession = ',gameSession)
     
-    // const [isLoading, setIsLoading] = useState(false)
+    
+    const [isLoading, setIsLoading] = useState(false)
     const keySessionDetailIDLocalStorage = `${sessionId}-detailID`
     console.log("sessionId = ",sessionId)
     // const {login} = useAuth()
@@ -21,20 +21,17 @@ const JoinGameScreen = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         const nickname = ((e.target as HTMLFormElement).elements[0] as HTMLInputElement).value;
-        
-        // setIsLoading(true)
+        if(nickname.length <= 0) {
+            alert("NickName must be filled")
+            return 0
+        }
+
+        setIsLoading(true);
         const res = await gameAPI.createGameSessionDetail({game_session_id:sessionId ? sessionId : '',student_name:nickname})
         localStorage.setItem(keySessionDetailIDLocalStorage,res.id)
+        setIsLoading(false);
         navigate(`${gameSession?.path_assign_game}&gameSessionID=${sessionId}`)
-        // setIsLoading(false)
-        
-        // Handle login logic here
-        
-
-        // const success = await login(username, password)
-        // if (success) {
-        //     navigate("/")
-        // }
+       
         
     }
 
@@ -62,9 +59,10 @@ const JoinGameScreen = () => {
                 />
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white rounded px-4 py-2 w-full cursor-pointer hover:bg-blue-600"
+                    disabled={isLoading ? true : false}
+                    className={`text-white rounded px-4 py-2 w-full cursor-pointer hover:bg-blue-600 ${isLoading ? 'bg-gray-500' : 'bg-blue-500'}`}
                 >
-                    Start
+                    {isLoading ? "Loading ..." : "Start"}
                 </button>
             </form>
         </div>
