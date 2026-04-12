@@ -1,7 +1,21 @@
 // Helper untuk parsing desain level
 const parseBoard = (layout: string[]) => layout.map((row: string) => row.split('').map((cell: string) => cell === '.'));
 
-export const PREDEFINED_LEVELS_1 = [
+// Helper untuk generate instruksi buggy awal
+const parseCmds = (str: string): string[] => {
+  const map: { [key: string]: string } = { 'F': 'FORWARD', 'B': 'BACKWARD', 'L': 'LEFT', 'R': 'RIGHT' };
+  const res: string[] = [];
+  if (!str) return res;
+  str.split(' ').forEach((token: string) => {
+    const char = token[0];
+    const count = parseInt(token.slice(1)) || 1;
+    for(let i=0; i<count; i++) res.push(map[char]);
+  });
+  return res;
+};
+
+
+export const PREDEFINED_MODULE_1 = [
   { board: parseBoard(["##########", "##########", "##########", "##########", "#........#", "##########", "##########", "##########", "##########", "##########"]), bee: { x: 1, y: 4, dir: 90 }, flower: { x: 8, y: 4 } },
   { board: parseBoard(["##########", "####.#####", "####.#####", "####.#####", "####.#####", "####.#####", "####.#####", "####.#####", "####.#####", "##########"]), bee: { x: 4, y: 1, dir: 180 }, flower: { x: 4, y: 8 } },
   { board: parseBoard(["##########", "##########", "##......##", "#######.##", "#######.##", "#######.##", "#######.##", "#######.##", "##########", "##########"]), bee: { x: 2, y: 2, dir: 90 }, flower: { x: 7, y: 7 } },
@@ -24,7 +38,7 @@ export const PREDEFINED_LEVELS_1 = [
   { board: parseBoard(["##########", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "#........#", "##########"]), bee: { x: 1, y: 8, dir: 270 }, flower: { x: 8, y: 1 } }
 ];
 
-export const PREDEFINED_LEVELS_2 = [
+export const PREDEFINED_MODULE_2 = [
   // --- 10 LEVEL DENGAN 3 BELOKAN ---
   { board: parseBoard(["##########", "#........#", "########.#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##.#######", "##########"]), bee: { x: 1, y: 1, dir: 90 }, flower: { x: 2, y: 8 } },
   { board: parseBoard(["##########", "##########", "##....####", "##.##.####", "##.##.####", "##.##.####", "##.##.####", "##.##....#", "##.#######", "##########"]), bee: { x: 2, y: 8, dir: 0 }, flower: { x: 8, y: 7 } },
@@ -54,4 +68,120 @@ export const PREDEFINED_LEVELS_2 = [
   
   // [MUNDUR] Lebah menghadap kiri (tembok), harus mundur ke kanan
   { board: parseBoard(["##########", "###......#", "###.####.#", "###.####.#", "#...####.#", "########.#", "#........#", "##########", "##########", "##########"]), bee: { x: 1, y: 6, dir: 270 }, flower: { x: 1, y: 4 } }
+];
+
+
+// 15 Level yang ditentukan (Level 1-10 Kosong, Level 11-15 Debugging)
+export const PREDEFINED_MODULE_3 = [
+  // --- LEVEL 11-15: 3 BELOKAN (4 JALAN), MODE DEBUGGING (Pre-filled buggy boxes) ---
+  { 
+    board: parseBoard(["##########", "#........#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##.#######", "##.#######", "##########"]), 
+    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 2, y: 8 },
+    buggyBoxes: [parseCmds('F6 R'), parseCmds('F3 L'), parseCmds('F6 L'), parseCmds('F2')] 
+    // Correct: F7 R, F3 R, F6 L, F4
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##.......#", "##.#######", "##.#######", "##.#####.#", "##.#####.#", "##.......#", "##########", "##########"]), 
+    bee: { x: 8, y: 2, dir: 270 }, flower: { x: 8, y: 5 },
+    buggyBoxes: [parseCmds('F5 L'), parseCmds('F5 R'), parseCmds('F7 L'), parseCmds('F1')] 
+    // Correct: F6 L, F5 L, F6 L, F2
+  }, 
+  { 
+    board: parseBoard(["##########", "########.#", "#....###.#", "#.######.#", "#.######.#", "#.######.#", "#.######.#", "#.######.#", "#........#", "##########"]), 
+    bee: { x: 8, y: 1, dir: 180 }, flower: { x: 4, y: 2 },
+    buggyBoxes: [parseCmds('F6 R'), parseCmds('F7 L'), parseCmds('F5 R'), parseCmds('F4')] 
+    // Correct: F7 R, F7 R, F6 R, F3
+  },
+  { 
+    board: parseBoard(["##########", "##########", "####....##", "####.##.##", "####.##.##", "####.##.##", "####.##.##", "#....##.##", "#######.##", "##########"]), 
+    bee: { x: 1, y: 7, dir: 90 }, flower: { x: 7, y: 8 },
+    buggyBoxes: [parseCmds('F3 R'), parseCmds('F4 L'), parseCmds('F3 R'), parseCmds('F7')] 
+    // Correct: F3 L, F5 R, F3 R, F6
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##########", "##########", "###.....##", "###.###.##", "###.###.##", "#...###.##", "#######.##", "##########"]), 
+    bee: { x: 7, y: 8, dir: 180 }, flower: { x: 1, y: 7 },
+    buggyBoxes: [parseCmds('B3 R'), parseCmds('F4 R'), parseCmds('F2 R'), parseCmds('F3')] 
+    // Correct: B4 R, F4 L, F3 R, F2
+  }
+];
+
+// 15 Level yang ditentukan (Level 1-10 Kosong, Level 11-15 Debugging)
+export const PREDEFINED_MODULE_4 = [
+  // --- LEVEL 1-5: 1 BELOKAN (2 JALAN), INSTRUKSI KOSONG ---
+  { 
+    board: parseBoard(["##########", "#........#", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "##########"]), 
+    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 8, y: 8 }
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##.#######", "##.#######", "##.#######", "##.#######", "##.#######", "##......##", "##########", "##########"]), 
+    bee: { x: 2, y: 2, dir: 180 }, flower: { x: 7, y: 7 }
+  },
+  { 
+    board: parseBoard(["##########", "##########", "#######.##", "#######.##", "#######.##", "#######.##", "#######.##", "##......##", "##########", "##########"]), 
+    bee: { x: 2, y: 7, dir: 90 }, flower: { x: 7, y: 2 }
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##.......#", "##.#######", "##.#######", "##.#######", "##.#######", "##.#######", "##.#######", "##########"]), 
+    bee: { x: 8, y: 2, dir: 270 }, flower: { x: 2, y: 8 }
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##.......#", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "##########"]), 
+    bee: { x: 2, y: 2, dir: 90 }, flower: { x: 8, y: 8 }
+  },
+
+  // --- LEVEL 6-10: 3 BELOKAN (4 JALAN), INSTRUKSI KOSONG ---
+  { 
+    board: parseBoard(["##########", "#........#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##.#######", "##.#######", "##########"]), 
+    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 2, y: 8 }
+  },
+  { 
+    board: parseBoard(["##########", "##########", "#####....#", "#####.####", "#####.####", "##....####", "##.#######", "##.#######", "##.#######", "##########"]), 
+    bee: { x: 2, y: 8, dir: 0 }, flower: { x: 8, y: 2 }
+  },
+  { 
+    // Level 8 diperbaiki koordinat bunganya agar sejajar dengan jalurnya
+    board: parseBoard(["##########", "##########", "########.#", "########.#", "########.#", "#####....#", "#####.####", "#####.####", "#####....#", "##########"]), 
+    bee: { x: 8, y: 8, dir: 270 }, flower: { x: 8, y: 2 }
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##.#######", "##.#######", "##.#######", "##....####", "#####.####", "#####.####", "##....####", "##########"]), 
+    bee: { x: 2, y: 8, dir: 90 }, flower: { x: 2, y: 2 }
+  },
+  { 
+    board: parseBoard(["##########", "##########", "########.#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##......##", "##########"]), 
+    bee: { x: 8, y: 2, dir: 180 }, flower: { x: 7, y: 8 }
+  },
+  
+  // --- LEVEL 11-15: 3 BELOKAN (4 JALAN), MODE DEBUGGING (Pre-filled buggy boxes) ---
+  { 
+    board: parseBoard(["##########", "#........#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##.#######", "##.#######", "##########"]), 
+    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 2, y: 8 },
+    buggyBoxes: [parseCmds('F6 R'), parseCmds('F3 L'), parseCmds('F6 L'), parseCmds('F2')] 
+    // Correct: F7 R, F3 R, F6 L, F4
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##.......#", "##.#######", "##.#######", "##.#####.#", "##.#####.#", "##.......#", "##########", "##########"]), 
+    bee: { x: 8, y: 2, dir: 270 }, flower: { x: 8, y: 5 },
+    buggyBoxes: [parseCmds('F5 L'), parseCmds('F5 R'), parseCmds('F7 L'), parseCmds('F1')] 
+    // Correct: F6 L, F5 L, F6 L, F2
+  }, 
+  { 
+    board: parseBoard(["##########", "########.#", "#....###.#", "#.######.#", "#.######.#", "#.######.#", "#.######.#", "#.######.#", "#........#", "##########"]), 
+    bee: { x: 8, y: 1, dir: 180 }, flower: { x: 4, y: 2 },
+    buggyBoxes: [parseCmds('F6 R'), parseCmds('F7 L'), parseCmds('F5 R'), parseCmds('F4')] 
+    // Correct: F7 R, F7 R, F6 R, F3
+  },
+  { 
+    board: parseBoard(["##########", "##########", "####....##", "####.##.##", "####.##.##", "####.##.##", "####.##.##", "#....##.##", "#######.##", "##########"]), 
+    bee: { x: 1, y: 7, dir: 90 }, flower: { x: 7, y: 8 },
+    buggyBoxes: [parseCmds('F3 R'), parseCmds('F4 L'), parseCmds('F3 R'), parseCmds('F7')] 
+    // Correct: F3 L, F5 R, F3 R, F6
+  },
+  { 
+    board: parseBoard(["##########", "##########", "##########", "##########", "###.....##", "###.###.##", "###.###.##", "#...###.##", "#######.##", "##########"]), 
+    bee: { x: 7, y: 8, dir: 180 }, flower: { x: 1, y: 7 },
+    buggyBoxes: [parseCmds('B3 R'), parseCmds('F4 R'), parseCmds('F2 R'), parseCmds('F3')] 
+    // Correct: B4 R, F4 L, F3 R, F2
+  }
 ];

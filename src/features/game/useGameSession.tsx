@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getGameSession } from "./gameApi";
 
 export interface GameSessionInterface {
-    path_assign_game: string;
+    path_game: string;
     game_name: string;
     game_session_id: string;
     name_session: number;

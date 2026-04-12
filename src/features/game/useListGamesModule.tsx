@@ -7,7 +7,7 @@ export interface ListGameModuleInterface {
     description: string;
     level: number;
     thumbnail_link: string;
-    path_trial_game: string;
+    path_game: string;
 }
 
 export const useListGameModules = (gameId: string) => {

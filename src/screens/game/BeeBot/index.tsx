@@ -1,107 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { PREDEFINED_MODULE_1, PREDEFINED_MODULE_2, PREDEFINED_MODULE_3, PREDEFINED_MODULE_4 } from './data/dataBeeBot';
+import * as gameAPI from '../../../features/game/gameApi'
 
 const BOARD_SIZE = 10;
 const MAX_COMMANDS = 40;
 const MAX_BOXES = 5;
 
+interface Level {
+  board: boolean[][];
+  bee: { x: number; y: number; dir: number };
+  flower: { x: number; y: number };
+  buggyBoxes?: string[][];
+}
+
 // Helper untuk jeda animasi
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Helper untuk parsing desain level
-const parseBoard = (layout: string[]) => layout.map(row => row.split('').map(cell => cell === '.'));
-
-// Helper untuk generate instruksi buggy awal
-const parseCmds = (str: string): string[] => {
-  const map: { [key: string]: string } = { 'F': 'FORWARD', 'B': 'BACKWARD', 'L': 'LEFT', 'R': 'RIGHT' };
-  const res: string[] = [];
-  if (!str) return res;
-  str.split(' ').forEach((token: string) => {
-    const char = token[0];
-    const count = parseInt(token.slice(1)) || 1;
-    for(let i=0; i<count; i++) res.push(map[char]);
-  });
-  return res;
-};
-
-// 15 Level yang ditentukan (Level 1-10 Kosong, Level 11-15 Debugging)
-const PREDEFINED_LEVELS = [
-  // --- LEVEL 1-5: 1 BELOKAN (2 JALAN), INSTRUKSI KOSONG ---
-  // { 
-  //   board: parseBoard(["##########", "#........#", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "##########"]), 
-  //   bee: { x: 1, y: 1, dir: 90 }, flower: { x: 8, y: 8 }
-  // },
-  // { 
-  //   board: parseBoard(["##########", "##########", "##.#######", "##.#######", "##.#######", "##.#######", "##.#######", "##......##", "##########", "##########"]), 
-  //   bee: { x: 2, y: 2, dir: 180 }, flower: { x: 7, y: 7 }
-  // },
-  // { 
-  //   board: parseBoard(["##########", "##########", "#######.##", "#######.##", "#######.##", "#######.##", "#######.##", "##......##", "##########", "##########"]), 
-  //   bee: { x: 2, y: 7, dir: 90 }, flower: { x: 7, y: 2 }
-  // },
-  // { 
-  //   board: parseBoard(["##########", "##########", "##.......#", "##.#######", "##.#######", "##.#######", "##.#######", "##.#######", "##.#######", "##########"]), 
-  //   bee: { x: 8, y: 2, dir: 270 }, flower: { x: 2, y: 8 }
-  // },
-  // { 
-  //   board: parseBoard(["##########", "##########", "##.......#", "########.#", "########.#", "########.#", "########.#", "########.#", "########.#", "##########"]), 
-  //   bee: { x: 2, y: 2, dir: 90 }, flower: { x: 8, y: 8 }
-  // },
-
-  // --- LEVEL 6-10: 3 BELOKAN (4 JALAN), INSTRUKSI KOSONG ---
-  // { 
-  //   board: parseBoard(["##########", "#........#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##.#######", "##.#######", "##########"]), 
-  //   bee: { x: 1, y: 1, dir: 90 }, flower: { x: 2, y: 8 }
-  // },
-  // { 
-  //   board: parseBoard(["##########", "##########", "#####....#", "#####.####", "#####.####", "##....####", "##.#######", "##.#######", "##.#######", "##########"]), 
-  //   bee: { x: 2, y: 8, dir: 0 }, flower: { x: 8, y: 2 }
-  // },
-  // { 
-  //   // Level 8 diperbaiki koordinat bunganya agar sejajar dengan jalurnya
-  //   board: parseBoard(["##########", "##########", "########.#", "########.#", "########.#", "#####....#", "#####.####", "#####.####", "#####....#", "##########"]), 
-  //   bee: { x: 8, y: 8, dir: 270 }, flower: { x: 8, y: 2 }
-  // },
-  // { 
-  //   board: parseBoard(["##########", "##########", "##.#######", "##.#######", "##.#######", "##....####", "#####.####", "#####.####", "##....####", "##########"]), 
-  //   bee: { x: 2, y: 8, dir: 90 }, flower: { x: 2, y: 2 }
-  // },
-  // { 
-  //   board: parseBoard(["##########", "##########", "########.#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##......##", "##########"]), 
-  //   bee: { x: 8, y: 2, dir: 180 }, flower: { x: 7, y: 8 }
-  // },
-  
-  // --- LEVEL 11-15: 3 BELOKAN (4 JALAN), MODE DEBUGGING (Pre-filled buggy boxes) ---
-  { 
-    board: parseBoard(["##########", "#........#", "########.#", "########.#", "##.......#", "##.#######", "##.#######", "##.#######", "##.#######", "##########"]), 
-    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 2, y: 8 },
-    buggyBoxes: [parseCmds('F6 R'), parseCmds('F3 L'), parseCmds('F6 L'), parseCmds('F2')] 
-    // Correct: F7 R, F3 R, F6 L, F4
-  },
-  { 
-    board: parseBoard(["##########", "##########", "##.......#", "##.#######", "##.#######", "##.#####.#", "##.#####.#", "##.......#", "##########", "##########"]), 
-    bee: { x: 8, y: 2, dir: 270 }, flower: { x: 8, y: 5 },
-    buggyBoxes: [parseCmds('F5 L'), parseCmds('F5 R'), parseCmds('F7 L'), parseCmds('F1')] 
-    // Correct: F6 L, F5 L, F6 L, F2
-  }, 
-  { 
-    board: parseBoard(["##########", "########.#", "#....###.#", "#.######.#", "#.######.#", "#.######.#", "#.######.#", "#.######.#", "#........#", "##########"]), 
-    bee: { x: 8, y: 1, dir: 180 }, flower: { x: 4, y: 2 },
-    buggyBoxes: [parseCmds('F6 R'), parseCmds('F7 L'), parseCmds('F5 R'), parseCmds('F4')] 
-    // Correct: F7 R, F7 R, F6 R, F3
-  },
-  { 
-    board: parseBoard(["##########", "##########", "####....##", "####.##.##", "####.##.##", "####.##.##", "####.##.##", "#....##.##", "#######.##", "##########"]), 
-    bee: { x: 1, y: 7, dir: 90 }, flower: { x: 7, y: 8 },
-    buggyBoxes: [parseCmds('F3 R'), parseCmds('F4 L'), parseCmds('F3 R'), parseCmds('F7')] 
-    // Correct: F3 L, F5 R, F3 R, F6
-  },
-  { 
-    board: parseBoard(["##########", "##########", "##########", "##########", "###.....##", "###.###.##", "###.###.##", "#...###.##", "#######.##", "##########"]), 
-    bee: { x: 7, y: 8, dir: 180 }, flower: { x: 1, y: 7 },
-    buggyBoxes: [parseCmds('B3 R'), parseCmds('F4 R'), parseCmds('F2 R'), parseCmds('F3')] 
-    // Correct: B4 R, F4 L, F3 R, F2
+// Fungsi untuk mengacak array
+function shuffleArray<T>(array: T[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-];
+}
 
 // Ikon Perintah (JSX)
 const CommandIcon = ({ cmd }: { cmd: string }) => {
@@ -142,7 +64,8 @@ const BeeSVG = () => (
   </svg>
 );
 
-export default function App() {
+export default function BeeBotGameScreen() {
+  const [shuffledLevels, setShuffledLevels] = useState<Level[]>([]);
   const [level, setLevel] = useState(1);
   const [board, setBoard] = useState<boolean[][]>([]);
   const [initialBee, setInitialBee] = useState({ x: 0, y: 0, dir: 0 });
@@ -165,6 +88,24 @@ export default function App() {
   const startTimeRef = useRef<number | null>(null);
   const commandRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  // get param from url and get sessionID from local storage
+  const [searchParams] = useSearchParams();
+  const module_level  = searchParams.get('module_level') || '1';
+  const keySessionDetailIDLocalStorage = `${searchParams.get('gameSessionID')}-detailID`
+  const gameSessionDetailID = localStorage.getItem(keySessionDetailIDLocalStorage)
+
+  //define module level
+  let PREDEFINED_LEVELS: Level[] = [];
+  if (parseInt(module_level) === 1) {
+    PREDEFINED_LEVELS = PREDEFINED_MODULE_1;
+  } else if (parseInt(module_level) === 2) {
+    PREDEFINED_LEVELS = PREDEFINED_MODULE_2;
+  } else if (parseInt(module_level) === 3) {
+    PREDEFINED_LEVELS = PREDEFINED_MODULE_3;
+  } else {
+    PREDEFINED_LEVELS = PREDEFINED_MODULE_4;
+  }
+
   // Hitung total indeks flat untuk animasi jalan
   let totalCmds = 0;
   const boxStartIndices = commandBoxes.map(box => {
@@ -178,8 +119,20 @@ export default function App() {
   commandBoxes.forEach((box, bIdx) => box.forEach((cmd, cIdx) => flatCmds.push({ cmd, bIdx, cIdx })));
 
   useEffect(() => {
-    startTimeRef.current = Date.now() as number;
-    generateLevel(1);
+    const init = async () => {
+      const shuffled = [...PREDEFINED_LEVELS];
+      let level_saved:number = 1
+      shuffleArray(shuffled)
+      setShuffledLevels(shuffled)
+      if (gameSessionDetailID) {
+        const response = await gameAPI.getGameSessionDetail(gameSessionDetailID);
+        level_saved = Number(response.level);
+        startTimeRef.current = response.duration === 0 ? Date.now() : response.duration;
+      }
+      startTimeRef.current = Date.now() as number;
+      generateLevel(level_saved,shuffled);
+    }
+    init()
   }, []);
 
   // Auto-scroll saat instruksi dieksekusi (jika animasi tidak di-skip)
@@ -191,10 +144,10 @@ export default function App() {
     }
   }, [execIndex, skipAnimation]);
 
-  const generateLevel = (currentLevel: number) => {
-    if (currentLevel > PREDEFINED_LEVELS.length) return;
+  const generateLevel = (currentLevel: number,levels: Level[] = shuffledLevels) => {
+    if (currentLevel > levels.length) return;
     const levelIndex = currentLevel - 1;
-    const levelData = PREDEFINED_LEVELS[levelIndex];
+    const levelData = levels[levelIndex];
 
     setLevel(currentLevel);
     setBoard(levelData.board);
@@ -203,12 +156,13 @@ export default function App() {
     setFlower({ ...levelData.flower });
     
     // Cek apakah level masuk mode debugging (level 11-15)
-    if (levelData.buggyBoxes) {
-      const loadedBoxes = levelData.buggyBoxes.map(box => [...box]);
+    const buggyBoxes = levelData.buggyBoxes;
+    if (buggyBoxes) {
+      const loadedBoxes = buggyBoxes.map((box: string[]) => [...box]);
       setCommandBoxes(loadedBoxes);
       
       // Buka kotak pertama saja
-      const initialCollapsed = loadedBoxes.map((_, i) => i !== 0);
+      const initialCollapsed = loadedBoxes.map((_: string[], i: number) => i !== 0);
       setCollapsedBoxes(initialCollapsed);
       setActiveBox(0);
       setInsertIndex(loadedBoxes[0].length); 
@@ -321,10 +275,12 @@ export default function App() {
     if (level > 10) {
       // Mode Debugging (Reset)
       const levelData = PREDEFINED_LEVELS[level - 1];
-      const loadedBoxes = levelData.buggyBoxes.map(box => [...box]);
+      const buggyBoxes = levelData.buggyBoxes ?? [];
+      if (buggyBoxes.length === 0) return;
+      const loadedBoxes = buggyBoxes.map((box: string[]) => [...box]);
       
       setCommandBoxes(loadedBoxes);
-      setCollapsedBoxes(loadedBoxes.map((_, i) => i !== 0));
+      setCollapsedBoxes(loadedBoxes.map((_, i: number) => i !== 0));
       setBee({ ...initialBee });
       setStatus('idle');
       setExecIndex(-1);
@@ -452,6 +408,9 @@ export default function App() {
         setMessage({ text: level > 10 ? "Hebat! Kamu berhasil memperbaiki kode dan mendapatkan madu! 🎉🍯" : "Hore! Lebah mendapatkan madunya! 🎉🍯", type: 'success' });
         setStatus('success');
       }
+      // Jika game memiliki sessionDetailID
+      if(gameSessionDetailID)
+        await gameAPI.updateGameSessionDetail(gameSessionDetailID,level+1,0)
     } else {
       setMessage({ text: "Ah, kodenya berhenti tapi lebah belum mencapai bunga. 🤔", type: 'fail' });
       setStatus('fail');

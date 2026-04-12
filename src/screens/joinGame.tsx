@@ -30,7 +30,7 @@ const JoinGameScreen = () => {
         const res = await gameAPI.createGameSessionDetail({game_session_id:sessionId ? sessionId : '',student_name:nickname})
         localStorage.setItem(keySessionDetailIDLocalStorage,res.id)
         setIsLoading(false);
-        navigate(`${gameSession?.path_assign_game}&gameSessionID=${sessionId}`)
+        navigate(`${gameSession?.path_game}&gameSessionID=${sessionId}`)
        
         
     }
@@ -40,8 +40,8 @@ const JoinGameScreen = () => {
     useEffect(() => {
         const init = async () => {
             const gameSessionDetailID = localStorage.getItem(keySessionDetailIDLocalStorage)
-            if(gameSessionDetailID && gameSession?.path_assign_game){
-                navigate(`${gameSession?.path_assign_game}&gameSessionID=${sessionId}`)
+            if(gameSessionDetailID && gameSession?.path_game){
+                navigate(`${gameSession?.path_game}&gameSessionID=${sessionId}`)
             }
         }
 

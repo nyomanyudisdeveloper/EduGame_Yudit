@@ -87,7 +87,7 @@ const DetailGameScreen = () => {
                         <div className="flex gap-2 mt-2">
                             <button 
                                 className="cursor-pointer mt-2 bg-blue-500 text-white rounded px-3 py-1 hover:bg-blue-600"
-                                onClick={() => window.open(`${window.location.origin}${game.path_trial_game}`, "_blank")}
+                                onClick={() => window.open(`${window.location.origin}${game.path_game}`, "_blank")}
                             >
                                 Try a game 
                             </button>
