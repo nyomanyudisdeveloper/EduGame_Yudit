@@ -71,6 +71,7 @@ export default function BeeBotGameScreen() {
   const [initialBee, setInitialBee] = useState({ x: 0, y: 0, dir: 0 });
   const [bee, setBee] = useState({ x: 0, y: 0, dir: 0 });
   const [flower, setFlower] = useState({ x: 0, y: 0 });
+  const [studentNameDisplay, setStudentNameDisplay] =  useState("");
   
   // STATE: Manage instruction order and boxes (paths)
   const [commandBoxes, setCommandBoxes] = useState<string[][]>([[]]);
@@ -126,6 +127,7 @@ export default function BeeBotGameScreen() {
       setShuffledLevels(shuffled)
       if (gameSessionDetailID) {
         const response = await gameAPI.getGameSessionDetail(gameSessionDetailID);
+        setStudentNameDisplay(response.student_name)
         level_saved = Number(response.level);
         startTimeRef.current = response.duration === 0 ? Date.now() : response.duration;
       }
@@ -461,6 +463,9 @@ export default function BeeBotGameScreen() {
         <div className="flex-1 flex flex-col min-h-0 bg-gray-50 rounded-2xl p-3 sm:p-4 border-2 border-gray-200 shadow-inner">
           
           {/* Level Title & Message (Top Right) */}
+          {studentNameDisplay.length > 0 && <div>
+            <span>Name : {studentNameDisplay}</span>
+          </div>} 
           <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 mb-2 pb-2 border-b-2 border-gray-200 shrink-0">
             <div className="flex items-center gap-1.5 sm:gap-2 text-gray-700 shrink-0">
               <span className="text-base sm:text-lg">🐝</span>

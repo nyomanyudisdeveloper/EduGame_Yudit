@@ -103,6 +103,41 @@ export const PREDEFINED_MODULE_3 = [
     bee: { x: 7, y: 8, dir: 180 }, flower: { x: 1, y: 7 },
     buggyBoxes: [parseCmds('B3 R'), parseCmds('F4 R'), parseCmds('F2 R'), parseCmds('F3')] 
     // Correct: B4 R, F4 L, F3 R, F2
+  },
+  { 
+    // Spiral ke dalam
+    board: parseBoard(["##########", "#........#", "#.######.#", "#.######.#", "#.##...#.#", "#.##.#.#.#", "#.##.#.#.#", "#....#...#", "##########", "##########"]), 
+    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 5, y: 4 },
+    buggyBoxes: [parseCmds('F6 R'), parseCmds('F6 R'), parseCmds('F3 L'), parseCmds('F2')] 
+    // Correct: F7 R, F6 R, F3 R, F3
+  },
+  { 
+    // Zig-Zag Panjang
+    board: parseBoard(["##########", "#....#####", "#.##.#####", "#.##.#####", "#....#####", "####.#####", "####.#####", "####.....#", "##########", "##########"]), 
+    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 8, y: 7 },
+    buggyBoxes: [parseCmds('F3 R'), parseCmds('F2 R'), parseCmds('F3 L'), parseCmds('F3 R'), parseCmds('F7')] 
+    // Correct: F3 R, F3 R, F3 L, F3 L, F7
+  },
+  { 
+    // Rute U-Turn dengan MUNDUR (Backward)
+    board: parseBoard(["##########", "########.#", "########.#", "#......#.#", "#.####.#.#", "#.####.#.#", "#.####.#.#", "#.####.#.#", "#........#", "##########"]), 
+    bee: { x: 8, y: 1, dir: 0 }, flower: { x: 6, y: 3 },
+    buggyBoxes: [parseCmds('B6 L'), parseCmds('F7 R'), parseCmds('F4 R'), parseCmds('F5')] 
+    // Correct: B7 L, F7 R, F5 R, F5
+  },
+  { 
+    // Menghindari pohon ganda
+    board: parseBoard(["##########", "##########", "##......##", "#######.##", "####.##.##", "####.##.##", "####.##.##", "####....##", "##########", "##########"]), 
+    bee: { x: 2, y: 2, dir: 270 }, flower: { x: 4, y: 4 },
+    buggyBoxes: [parseCmds('B4 L'), parseCmds('F5 R'), parseCmds('F3 L'), parseCmds('F4')] 
+    // Correct: B5 L, F5 L, F3 R, F3
+  },
+  { 
+    // Labirin kotak besar (Final)
+    board: parseBoard(["##########", "#........#", "########.#", "########.#", "##....##.#", "##.#####.#", "##.#####.#", "##.#####.#", "##.......#", "##########"]), 
+    bee: { x: 1, y: 1, dir: 90 }, flower: { x: 5, y: 4 },
+    buggyBoxes: [parseCmds('F6 R'), parseCmds('F7 L'), parseCmds('F5 R'), parseCmds('F4 L'), parseCmds('F2')] 
+    // Correct: F7 R, F7 R, F6 R, F4 R, F3
   }
 ];
 
