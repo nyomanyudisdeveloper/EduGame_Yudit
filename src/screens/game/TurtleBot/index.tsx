@@ -211,24 +211,7 @@ export default function TurtleBotGameScreen() {
     setMessage("Command added! Type more or press RUN.");
   };
 
-  // Add from UI Buttons
-  const addCommandFromButton = (cmdType: string) => {
-    if (isExecuting || commands.length >= MAX_COMMANDS) return;
-    
-    let baseLabel = '';
-    if (cmdType === 'FORWARD') baseLabel = 'fd';
-    else if (cmdType === 'BACKWARD') baseLabel = 'bk';
-    else if (cmdType === 'LEFT') baseLabel = 'lt';
-    else if (cmdType === 'RIGHT') baseLabel = 'rt';
-    
-    const updatedCmds = [...commands];
-    updatedCmds.splice(insertIndex, 0, { type: cmdType, count: 1, label: baseLabel });
-
-    setCommands(updatedCmds);
-    setInsertIndex(insertIndex + 1);
-    setStatus('idle');
-    setMessage("Command added! Type more or press RUN.");
-  };
+ 
 
   // Clear all commands
   const clearCommands = () => {
@@ -562,18 +545,18 @@ export default function TurtleBotGameScreen() {
             <div className="bg-cyan-50/50 border-2 border-cyan-200 rounded-xl p-3 sm:p-4 mt-1 shadow-sm">
               <h4 className="font-bold text-cyan-800 text-xs sm:text-sm mb-2 text-center">📜 COMMAND LEGEND</h4>
               <div className="grid grid-cols-2 gap-2 text-xs sm:text-sm text-cyan-900">
-                <button type="button" disabled={isLocked} onClick={() => addCommandFromButton('FORWARD')} className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100 hover:bg-blue-50 hover:border-blue-200 transition-colors active:scale-95 text-left cursor-pointer">
+                <div className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100  transition-colors  text-left ">
                   <span>Forward</span><span className="font-mono font-bold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">fd</span>
-                </button>
-                <button type="button" disabled={isLocked} onClick={() => addCommandFromButton('BACKWARD')} className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100 hover:bg-indigo-50 hover:border-indigo-200 transition-colors active:scale-95 text-left cursor-pointer">
+                </div>
+                <div className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100  transition-colors text-left ">
                   <span>Backward</span><span className="font-mono font-bold text-indigo-600 bg-indigo-100 px-1.5 py-0.5 rounded">bk</span>
-                </button>
-                <button type="button" disabled={isLocked} onClick={() => addCommandFromButton('LEFT')} className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100 hover:bg-orange-50 hover:border-orange-200 transition-colors active:scale-95 text-left cursor-pointer">
+                </div>
+                <div className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100  transition-colors text-left ">
                   <span>Turn Left</span><span className="font-mono font-bold text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded">lt</span>
-                </button>
-                <button type="button" disabled={isLocked} onClick={() => addCommandFromButton('RIGHT')} className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100 hover:bg-purple-50 hover:border-purple-200 transition-colors active:scale-95 text-left cursor-pointer">
+                </div>
+                <div className="flex items-center justify-between bg-white px-2 py-1.5 rounded-lg border border-cyan-100  transition-colors text-left ">
                   <span>Turn Right</span><span className="font-mono font-bold text-purple-600 bg-purple-100 px-1.5 py-0.5 rounded">rt</span>
-                </button>
+                </div>
               </div>
               <p className="text-[10px] sm:text-xs text-center mt-3 text-cyan-700">
                 💡 <strong>Tips:</strong> You can add numbers to move faster! Example: type <code className="bg-white px-1 py-0.5 rounded text-blue-600 border border-cyan-200 shadow-sm">fd 5</code>
