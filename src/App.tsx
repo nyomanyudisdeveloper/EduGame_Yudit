@@ -9,6 +9,7 @@ import GameSession from "./screens/gameSession";
 import JoinGameScreen from "./screens/joinGame";
 import GameSessionDetailScreen from "./screens/gameSessionDetail";
 import BeeBotGameScreen from "./screens/game/BeeBot";
+import TurtleBotGameScreen from "./screens/game/TurtleBot";
 
 
 
@@ -21,6 +22,7 @@ const App = () => {// Use VITE_ prefix for Vite
         <Route element={<PublicLayout />}>
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/bee-bot" element={<BeeBotGameScreen />} />
+          <Route path="/turtle-bot" element={<TurtleBotGameScreen />} />
           <Route path="/join/:sessionId" element={<JoinGameScreen />} />
         </Route>
 
