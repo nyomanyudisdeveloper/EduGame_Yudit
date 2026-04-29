@@ -417,7 +417,7 @@ export default function TurtleBotGameScreen() {
     );
   };
 
-  const isLocked = isExecuting || commands.length >= MAX_COMMANDS;
+  // const isLocked = isExecuting || commands.length >= MAX_COMMANDS;
 
   return (
     <div className="min-h-screen bg-cyan-950 flex items-center justify-center p-2 sm:p-4 font-sans text-cyan-900">
