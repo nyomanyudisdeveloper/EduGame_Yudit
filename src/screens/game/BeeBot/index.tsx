@@ -274,23 +274,23 @@ export default function BeeBotGameScreen() {
   const handleClearOrReset = () => {
     if (isExecuting) return;
     
-    if (level > 10) {
-      // Mode Debugging (Reset)
-      const levelData = PREDEFINED_LEVELS[level - 1];
-      const buggyBoxes = levelData.buggyBoxes ?? [];
-      if (buggyBoxes.length === 0) return;
-      const loadedBoxes = buggyBoxes.map((box: string[]) => [...box]);
+    // if (level > 10) {
+    //   // Mode Debugging (Reset)
+    //   const levelData = PREDEFINED_LEVELS[level - 1];
+    //   const buggyBoxes = levelData.buggyBoxes ?? [];
+    //   if (buggyBoxes.length === 0) return;
+    //   const loadedBoxes = buggyBoxes.map((box: string[]) => [...box]);
       
-      setCommandBoxes(loadedBoxes);
-      setCollapsedBoxes(loadedBoxes.map((_, i: number) => i !== 0));
-      setBee({ ...initialBee });
-      setStatus('idle');
-      setExecIndex(-1);
-      setErrorIndex(-1);
-      setActiveBox(0);
-      setInsertIndex(loadedBoxes[0].length);
-      setMessage({ text: "Code reset to initial state. Find the bugs!", type: 'idle' });
-    } else {
+    //   setCommandBoxes(loadedBoxes);
+    //   setCollapsedBoxes(loadedBoxes.map((_, i: number) => i !== 0));
+    //   setBee({ ...initialBee });
+    //   setStatus('idle');
+    //   setExecIndex(-1);
+    //   setErrorIndex(-1);
+    //   setActiveBox(0);
+    //   setInsertIndex(loadedBoxes[0].length);
+    //   setMessage({ text: "Code reset to initial state. Find the bugs!", type: 'idle' });
+    // } else {
       // Normal Mode (Clear)
       setCommandBoxes([[]]);
       setCollapsedBoxes([false]);
@@ -301,7 +301,7 @@ export default function BeeBotGameScreen() {
       setActiveBox(0);
       setInsertIndex(0);
       setMessage({ text: "All instructions deleted. Create a new path!", type: 'idle' });
-    }
+    // }
   };
 
   const executeCommands = async () => {
@@ -646,7 +646,11 @@ export default function BeeBotGameScreen() {
           {status !== 'success' && status !== 'finished' ? (
             <div className="flex gap-2 sm:gap-2 shrink-0">
               <button disabled={isExecuting} onClick={handleClearOrReset} className="flex-1 bg-red-500 hover:bg-red-600 active:bg-red-700 disabled:opacity-50 text-white font-bold py-1.5 sm:py-2.5 rounded-lg shadow-[0_3px_0_#b91c1c] active:shadow-[0_0px_0_#b91c1c] active:translate-y-[3px] transition-all flex justify-center items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs">
-                {level > 10 ? (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-4 sm:h-4"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  <span className="hidden sm:inline">Delete</span> All
+                </>
+                {/* {level > 10 ? (
                   <>
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-4 sm:h-4"><path d="M3 12a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     <span className="hidden sm:inline">Reset</span> Code
@@ -656,7 +660,7 @@ export default function BeeBotGameScreen() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="sm:w-4 sm:h-4"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     <span className="hidden sm:inline">Delete</span> All
                   </>
-                )}
+                )} */}
               </button>
               
               <button disabled={isExecuting || totalCmds === 0} onClick={executeCommands} className="flex-[2] bg-green-500 hover:bg-green-600 active:bg-green-700 disabled:opacity-50 text-white font-bold py-1.5 sm:py-2.5 rounded-lg shadow-[0_3px_0_#15803d] active:shadow-[0_0px_0_#15803d] active:translate-y-[3px] transition-all flex justify-center items-center gap-1.5 text-xs sm:text-sm tracking-wider">
