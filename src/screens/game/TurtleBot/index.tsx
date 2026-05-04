@@ -88,7 +88,7 @@ export default function TurtleBotGameScreen() {
     PREDEFINED_LEVELS = PREDEFINED_MODULE_1;
   } else if (parseInt(module_level) === 2) {
     PREDEFINED_LEVELS = PREDEFINED_MODULE_2;
-  } else  (parseInt(module_level) === 3) {
+  } else {
     PREDEFINED_LEVELS = PREDEFINED_MODULE_3;
   } 
 
