@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ArrowUp, ArrowDown, RotateCcw, RotateCw, Play, Trash2, RefreshCcw, Keyboard } from 'lucide-react';
-import { PREDEFINED_MODULE_1, PREDEFINED_MODULE_2, PREDEFINED_MODULE_3, PREDEFINED_MODULE_4 } from './data/dataTurtleBot';
+import { PREDEFINED_MODULE_1, PREDEFINED_MODULE_2, PREDEFINED_MODULE_3 } from './data/dataTurtleBot';
 import * as gameAPI from '../../../features/game/gameApi';
 
 const BOARD_SIZE = 10;
