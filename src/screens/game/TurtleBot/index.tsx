@@ -88,11 +88,9 @@ export default function TurtleBotGameScreen() {
     PREDEFINED_LEVELS = PREDEFINED_MODULE_1;
   } else if (parseInt(module_level) === 2) {
     PREDEFINED_LEVELS = PREDEFINED_MODULE_2;
-  } else if (parseInt(module_level) === 3) {
+  } else  (parseInt(module_level) === 3) {
     PREDEFINED_LEVELS = PREDEFINED_MODULE_3;
-  } else {
-    PREDEFINED_LEVELS = PREDEFINED_MODULE_4;
-  }
+  } 
 
   // Load Level Map
   const generateLevel = (currentLevel: number, levels: any[] = shuffledLevels) => {
