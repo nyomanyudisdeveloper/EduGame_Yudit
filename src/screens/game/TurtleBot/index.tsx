@@ -427,7 +427,7 @@ export default function TurtleBotGameScreen() {
             <span>Name : {studentNameDisplay}</span>
           </div>}
           <div className="bg-cyan-500 text-white px-4 sm:px-6 py-2 rounded-full font-bold text-lg sm:text-2xl mb-4 shadow-md flex items-center gap-2">
-            <span>🐢</span> Smart Turtle - Level {level}
+            <span>🐢</span> Smart Luna - Level {level}
           </div>
           
           {/* Game Board (10x10 Grid) */}
